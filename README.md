@@ -1,41 +1,65 @@
 # Employee Management System
 
-A full-stack Employee Management System built with ASP.NET Core Web API, React, TypeScript, PostgreSQL, and Docker. The application provides employee management functionality with JWT-based authentication and a layered backend architecture.
+A full-stack Employee Management System built with **ASP.NET Core Web API, React, TypeScript, PostgreSQL, and Docker**. The application demonstrates secure authentication, RESTful API development, database persistence, and containerized deployment architecture.
 
-## Tech Stack
 
-### Backend
-- ASP.NET Core Web API (.NET 10)
-- Entity Framework Core
-- PostgreSQL
-- ASP.NET Core Identity
-- JWT authentication and authorization
-- RESTful API architecture
 
-### Frontend
-- React
-- TypeScript
-- Vite
+## Overview
 
-### Database and Deployment
-- PostgreSQL 16
-- Docker and Docker Compose
-- Nginx
-- Git and GitHub
-- Render deployment preparation
+The Employee Management System provides a web-based interface for managing employee information through a React frontend and an ASP.NET Core REST API. It uses PostgreSQL for persistent storage and JWT-based authentication to protect employee-related operations.
 
-## Features
+The project follows a layered backend structure that separates API controllers, business logic, data access, and data transfer objects.
 
-- User registration and login
-- JWT-based authentication
-- Protected employee API endpoints
-- Create and manage employee records
-- Employee information including name, department, salary, and active status
-- Entity Framework Core database migrations
-- PostgreSQL database persistence
-- Containerized application services
-- React frontend served through Nginx
-- API reverse proxy configuration for local Docker deployment
+## Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React, TypeScript, Vite |
+| Backend | ASP.NET Core Web API, .NET 10, C# |
+| Authentication | ASP.NET Core Identity, JWT |
+| Database | PostgreSQL, Entity Framework Core, Npgsql |
+| API Design | RESTful APIs, DTOs |
+| Containerization | Docker, Docker Compose |
+| Web Server | Nginx |
+| Version Control | Git, GitHub |
+| Deployment | Render — planned deployment architecture |
+
+## Key Features
+
+- User registration and login.
+- JWT-based authentication and protected API endpoints.
+- Employee record management.
+- Employee attributes including name, department, salary, and active status.
+- RESTful API endpoints for employee operations.
+- Entity Framework Core migrations for database schema management.
+- PostgreSQL integration and persistent database storage.
+- React and TypeScript frontend.
+- Nginx configuration for frontend hosting and API reverse proxying.
+- Docker Compose orchestration for the frontend, API, and database.
+- Environment-based configuration for sensitive credentials.
+
+## Architecture
+
+```text
+React + TypeScript Frontend
+          |
+          | HTTP / REST API
+          v
+       Nginx Proxy
+          |
+          v
+ ASP.NET Core Web API
+          |
+     JWT Authentication
+          |
+          v
+ Entity Framework Core
+          |
+          v
+       PostgreSQL
+```
+
+For a public deployment, the frontend and API can run as separate services, with a managed PostgreSQL database. The frontend communicates with the public API URL, and the API restricts cross-origin requests to the configured frontend origin.
 
 ## Project Structure
 
@@ -62,138 +86,69 @@ employee-management/
 └── README.md
 ```
 
-## Prerequisites
-
-Install the following tools:
-
-- [.NET SDK](https://dotnet.microsoft.com/download)
-- [Node.js and npm](https://nodejs.org/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Git](https://git-scm.com/)
-
-Docker Desktop must be running before starting the containerized application.
-
-## Getting Started
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/PriyaMano19/employee-management.git
-cd employee-management
-```
-
-### 2. Configure environment variables
-
-Create a `.env` file in the project root:
-
-```env
-POSTGRES_PASSWORD=your_strong_database_password
-JWT_KEY=your_long_random_jwt_signing_key
-```
-
-Use strong, unique values. Keep `.env` private and never commit it to GitHub.
-
-The repository's `.gitignore` is configured to exclude `.env` files.
-
-### 3. Start the application with Docker
-
-Build and start the services:
-
-```bash
-docker compose up -d --build
-```
-
-Check the service status:
-
-```bash
-docker compose ps
-```
-
-The application consists of three services:
-
-| Service | Purpose |
-|---|---|
-| `frontend` | React application served by Nginx |
-| `api` | ASP.NET Core Web API |
-| `db` | PostgreSQL database |
-
-### 4. Apply database migrations
-
-The database schema must be created before using the application. The project uses Entity Framework Core migrations.
-
-For the Docker environment, apply the existing migrations using the configured PostgreSQL connection and the project's EF Core tooling. The required migrations include the initial schema and Identity user tables.
-
-Verify that the database contains the expected tables:
-
-```bash
-docker compose exec db \
-  psql -U employee_app -d employee_management -c '\dt'
-```
-
-### 5. Open the application
-
-Once the services are running, open:
-
-**Frontend:** http://localhost:8080
-
-The Nginx configuration forwards `/api/` requests to the API container.
-
 ## API Endpoints
 
-The API base URL in the local Docker deployment is accessed through:
+The API exposes authentication and employee management endpoints.
 
-```text
-http://localhost:8080/api
-```
-
-| Method | Endpoint | Purpose |
+| HTTP Method | Endpoint | Description |
 |---|---|---|
 | POST | `/api/auth/register` | Register a user |
 | POST | `/api/auth/login` | Authenticate a user |
 | GET | `/api/employees` | Retrieve employee records |
 | POST | `/api/employees` | Create an employee record |
 
-The employee endpoints require JWT authentication. Send the access token in the HTTP `Authorization` header:
+Employee endpoints require a valid JWT access token.
 
 ```http
-Authorization: Bearer <your_access_token>
+Authorization: Bearer <access_token>
 ```
 
-The exact request and response fields are defined by the API DTOs and controller implementations.
+## Local Setup
 
-## Database
+### Prerequisites
 
-The application uses PostgreSQL with Entity Framework Core and Npgsql.
+- .NET SDK 10
+- Node.js and npm
+- Docker Desktop
+- Git
 
-The database schema is managed through migrations, including:
+### Clone the repository
 
-- Employee records
-- ASP.NET Core Identity users and related authentication tables
-- EF Core migration history
-
-Docker Compose uses a named volume to persist PostgreSQL data across container restarts.
-
-## Frontend Configuration
-
-The React application uses the `VITE_API_URL` environment variable to configure its API base URL.
-
-For the Docker deployment, the frontend is built with:
-
-```text
-VITE_API_URL=/api
+```bash
+git clone https://github.com/PriyaMano19/employee-management.git
+cd employee-management
 ```
 
-This allows Nginx to proxy API requests to the backend container.
+### Configure environment variables
 
-For a separate frontend deployment, configure `VITE_API_URL` to the public API base URL, ending in `/api`. The backend CORS policy must also allow the deployed frontend's origin.
+Create a `.env` file in the repository root:
 
-Vite environment variables are embedded at build time, so update the variable and rebuild or redeploy the frontend when its value changes.
+```env
+POSTGRES_PASSWORD=your_strong_database_password
+JWT_KEY=your_long_random_jwt_signing_key
+```
 
-## Running Without Docker
+Do not commit this file or expose production secrets.
 
-### Backend
+### Run with Docker Compose
 
-From the repository root:
+```bash
+docker compose up -d --build
+```
+
+Check service status:
+
+```bash
+docker compose ps
+```
+
+Open the frontend at:
+
+http://localhost:8080
+
+The application uses PostgreSQL in Docker, and the database schema must be initialized using the existing Entity Framework Core migrations.
+
+### Run the backend independently
 
 ```bash
 cd EmployeeManagement.Api
@@ -202,11 +157,9 @@ dotnet build
 dotnet run
 ```
 
-Configure a valid PostgreSQL connection string and JWT settings through local configuration or environment variables before running the API.
+Provide a valid PostgreSQL connection string and JWT configuration before starting the API.
 
-### Frontend
-
-Open a separate terminal:
+### Run the frontend independently
 
 ```bash
 cd employee-management-ui
@@ -214,41 +167,38 @@ npm ci
 npm run dev
 ```
 
-Configure `VITE_API_URL` to point to the running API. The API CORS policy must allow the frontend development origin.
+Configure `VITE_API_URL` to point to the running API. The API's CORS configuration must allow the frontend's origin.
 
-## Testing
+## Database Management
 
-The repository contains an `EmployeeManagement.Tests` project.
+The database schema is managed with Entity Framework Core migrations. PostgreSQL stores employee information and ASP.NET Core Identity data.
 
-Run the test suite from the repository root:
+For production, use a managed database and securely configure the database connection string through the deployment platform's environment variables.
 
-```bash
-dotnet test
-```
+## Deployment Configuration
 
-## Deployment
+The intended cloud architecture uses:
 
-The application is being prepared for deployment using Render.
+- **Frontend:** Render Static Site.
+- **Backend:** Render Web Service using the API Dockerfile.
+- **Database:** Render managed PostgreSQL.
 
-The intended deployment architecture is:
+Required production configuration includes:
 
-- **PostgreSQL:** Render managed PostgreSQL database
-- **Backend:** Render Web Service using the API Dockerfile
-- **Frontend:** Render Static Site using the React/Vite build
+- `ConnectionStrings__DefaultConnection`
+- `Jwt__Key`
+- `Jwt__Issuer`
+- `Jwt__Audience`
+- `VITE_API_URL` for the frontend build.
+- An API CORS policy allowing the deployed frontend origin.
 
-Production deployment requires configuring the database connection string, JWT signing key, API port, frontend API URL, and CORS allowed origins through the deployment platform's environment settings.
+Production deployment also requires applying database migrations, validating authentication, and verifying that the deployed frontend can communicate with the API over HTTPS.
 
-Do not commit production credentials or connection strings to the repository.
+## Security Considerations
 
-## Security Notes
+- JWT-based authentication for protected endpoints.
+- Secrets supplied through environment configuration rather than committed source files.
+- CORS restricted to trusted frontend origins.
+- HTTPS for public application traffic.
+- Database credentials kept separate from application source code.
 
-- Keep database credentials and JWT signing keys out of source control.
-- Use HTTPS for public deployments.
-- Restrict CORS to trusted frontend origins.
-- Protect employee endpoints with authentication and authorization.
-- Use strong, unique secrets in each environment.
-- Review logging and data protection configuration before production use.
-
-## License
-
-No license has been specified for this repository yet.
